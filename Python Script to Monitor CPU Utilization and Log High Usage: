@@ -1,0 +1,35 @@
+import psutil
+import time
+import logging
+from datetime import datetime, timedelta
+
+# Set up logging
+logging.basicConfig(
+    filename="cpu_utilization.log",
+    level=logging.INFO,
+    format="%(asctime)s - CPU Utilization: %(message)s%%",
+    datefmt="%Y-%m-%d %H:%M:%S"
+)
+#m for  month , M for minute and d for normal date 08/04/2024  and D for 08-08-24.
+def monitor_cpu_utilization(threshold=85, interval=1, duration=24):
+    start_time = datetime.now()
+    end_time = start_time + timedelta(hours=duration)
+    
+    try:
+        while datetime.now() < end_time:
+            # Get the CPU usage percentage
+            cpu_usage = psutil.cpu_percent(interval=interval)
+            
+            if cpu_usage > threshold:
+                # Log the high CPU usage
+                logging.info(f"{cpu_usage}% - above threshold of {threshold}%")
+
+            # Sleep for the specified interval before getting the next reading
+            time.sleep(interval)
+    
+    except KeyboardInterrupt:
+        print("\nMonitoring stopped by user.")
+
+if __name__ == "__main__":
+    # Monitor for 24 hours
+    monitor_cpu_utilization(duration=24)
